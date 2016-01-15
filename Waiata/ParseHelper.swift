@@ -1,3 +1,14 @@
+
+
+
+//Oorspronkelijk werd de Online database "Parse" gebruikt; maar deze retourneerde nooit objecten. Zelfs niet wanneer specifieke ID's gebruikt werden en de objecten wel degelijk bestonden
+
+
+
+
+
+
+
 //
 //  ParseHelper.swift
 //  Waiata

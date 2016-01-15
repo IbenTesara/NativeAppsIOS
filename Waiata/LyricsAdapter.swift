@@ -28,20 +28,14 @@ class LyricsAdapter{
     
     required init(){
         
+        //Ophalen van realmHelper
         realmHelper = RealmHelper()
+        
+        //Ophalen van all lyrics-items uit database
         realmHelper.getAllLyrics()
         
-        var i = 0
-        
-        
-        
-        for tag in realmHelper.tags {
-        
-            tags.append(tag)
-            result[i] = [Lyrics]()
-            i++
-        
-        }
+        //Update tags
+        updateTags()
         
      
         
@@ -49,12 +43,74 @@ class LyricsAdapter{
         
     }
 
-
+    
+    //Ophalen lyrics dictionary
     func passLyrics () -> Dictionary<Int,[Lyrics]> {
         
+        //Ophalen van alle lyrics-items uit database
          realmHelper.getAllLyrics()
+        
+        //We halen de naar lyrics-omgezette object op
         lyrics = realmHelper.lyricsAdapted
         
+        
+        
+        //Update tags
+        
+        updateTags()
+        
+      
+        //We overlopen alle lyrics-items, en voegen die aan de bijhorende arrays in de dictionary toe
+        for lyric in lyrics {
+        
+        let sort = tags.indexOf(lyric.tag)
+            
+            result[sort!]?.append(lyric)
+        }
+        
+      
+        
+        //Returnen van dictionary
+        return result
+    }
+
+    
+    func addLyrics(description : String, tag : String){
+    
+        //Opstellen van nieuw Lyrics object dat kan geschreven worden naar de database
+        let lyric = LyricsRealm()
+        
+        //Toekennen van informatie aan lyricsobject
+        lyric.tag = tag
+        lyric.songDescription = description
+        
+        //Wegschrijven naar database
+        realmHelper.writeToDataBase(lyric)
+        
+    
+    }
+    
+    
+    func removeLyrics(section : Int, position : Int){
+        
+        //Opvragen van lyric item die we zullen verwijderen
+        let lyric = result[section]![position]
+        
+        //Meegeven van data aan verwijdermethode
+        realmHelper.removeLyric(lyric.description, tag: lyric.tag)
+        
+    }
+    
+    //Ongebruikt; mogelijk updaten in de toekomst
+    func updateLyrics(description : String, tag : String){
+    
+        realmHelper.update(description, tag: tag)
+    
+    }
+    
+    func updateTags(){
+        
+        //We doorlopen alle tags van lyrics-items en voegen die toe aan de tags-array ( die we gebruiken voor de titels van de sections ) en voor iedere tag die we hebben, maken we een array aan in de dictionairy.
         var i = 0
         
         tags = [String]()
@@ -66,44 +122,6 @@ class LyricsAdapter{
             i++
             
         }
-        
-      
-        for lyric in lyrics {
-        
-        let sort = tags.indexOf(lyric.tag)
-            
-            result[sort!]?.append(lyric)
-        }
-        
-      
-        
-        
-        return result
-    }
-
-    
-    func addLyrics(description : String, tag : String){
-    
-        let lyric = LyricsRealm()
-        
-        lyric.tag = tag
-        lyric.songDescription = description
-        
-        realmHelper.writeToDataBase(lyric)
-        
-    
-    }
-    
-    func removeLyrics(section : Int, position : Int){
-        let lyric = result[section]![position]
-        realmHelper.removeLyric(lyric.description, tag: lyric.tag)
-        
-    }
-    
-    func updateLyrics(description : String, tag : String){
-    
-        realmHelper.update(description, tag: tag)
-    
     }
 
 }

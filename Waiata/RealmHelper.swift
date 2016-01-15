@@ -17,8 +17,10 @@ class RealmHelper{
     var lyricsAdapted = [Lyrics]()
     var tags = Set<String>()
     
+    
     init(){
     
+        //Openen van database
         persister = try! Realm()
     }
     
@@ -26,7 +28,7 @@ class RealmHelper{
     func writeToDataBase( lyric : LyricsRealm){
     
        
-        
+        //Schrijven naar database
         try! persister.write { () -> Void in
             persister.add(lyric)
         }
@@ -34,15 +36,17 @@ class RealmHelper{
     }
     
     func getAllLyrics() {
-    
+        
+        //Opstellen van nieuwe set voor tags ( set, aangezien we ze gaan sorteren op tag dus we mogen de tag maar één keer hebben)
         tags = Set<String>()
         
+        //Opvragen van alle LyricsRealm-objects uit de database
         lyrics = persister.objects(LyricsRealm)
         
-        
+        //Opstellen van nieuwe lyricsAdapted lisst
         lyricsAdapted = [Lyrics]()
 
-        
+        //Omvormen van LyricsRealm naar Lyric + toevoegen van tag aan set
         for lyric in lyrics{
         
             
@@ -56,12 +60,14 @@ class RealmHelper{
     
     }
     
+    //Converten naar Lyrics
     func convertToLyric( description : String, tag : String ) -> Lyrics{
         
         return Lyrics(description: description, tag: tag)
         
     }
     
+    //Verwijderen van lyrics
     func removeLyric ( description : String, tag : String){
         
         let objectToDelete = persister.objects(LyricsRealm).filter("songDescription = '"+description+"' AND tag = '"+tag+"'")
@@ -74,6 +80,7 @@ class RealmHelper{
     
     }
     
+    //Niet gebruikt
     func update( description : String, tag : String){
     
         let lyric = LyricsRealm()
