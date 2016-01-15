@@ -15,6 +15,7 @@ class RealmHelper{
     
     var lyrics : Results<LyricsRealm>!
     var lyricsAdapted = [Lyrics]()
+    var tags = Set<String>()
     
     init(){
     
@@ -34,6 +35,7 @@ class RealmHelper{
     
     func getAllLyrics() {
     
+        tags = Set<String>()
         
         lyrics = persister.objects(LyricsRealm)
         
@@ -45,35 +47,18 @@ class RealmHelper{
         
             
             lyricsAdapted.append(convertToLyric(lyric.songDescription, tag: lyric.tag))
+            tags.insert(lyric.tag)
             
         }
+        
+        
         
     
     }
     
     func convertToLyric( description : String, tag : String ) -> Lyrics{
         
-        var mood = Mood.Other
-        
-        if( tag == "Sad"){
-            
-            mood = Mood.Sad
-            
-        } else if (tag == "Other"){
-            
-            mood = Mood.Other
-            
-        } else if ( tag == "Happy"){
-            
-            mood = Mood.Happy
-            
-        } else if ( tag == "Love"){
-            
-            mood = Mood.Love
-            
-        }
-        
-        return Lyrics(description: description, tag: mood)
+        return Lyrics(description: description, tag: tag)
         
     }
     
@@ -86,6 +71,22 @@ class RealmHelper{
             persister.delete(objectToDelete)
         }
       
+    
+    }
+    
+    func update( description : String, tag : String){
+    
+        let lyric = LyricsRealm()
+        
+        lyric.songDescription = description
+        lyric.tag = tag
+        
+        try! persister.write{
+            
+            persister.add(lyric, update: true)
+        
+        }
+        
     
     }
     

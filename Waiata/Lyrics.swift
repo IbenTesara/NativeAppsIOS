@@ -12,11 +12,11 @@ class Lyrics {
 
 
     var description : String
-    let tag : Mood
+    let tag : String
     
 
     
-    init(description: String, tag : Mood){
+    init(description: String, tag : String){
     
         self.description = description
         self.tag = tag

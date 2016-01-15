@@ -20,22 +20,31 @@ class LyricsAdapter{
     
     var result = [Int:[Lyrics]]()
     
-     var moods = [String]()
+     var tags = [String]()
     
     var realmHelper : RealmHelper
     
     
     
-    init(){
+    required init(){
+        
+        realmHelper = RealmHelper()
+        realmHelper.getAllLyrics()
+        
+        var i = 0
         
         
-        moods.append("Other")
-        moods.append("Sad")
-        moods.append("Happy")
-        moods.append("Love")
+        
+        for tag in realmHelper.tags {
+        
+            tags.append(tag)
+            result[i] = [Lyrics]()
+            i++
+        
+        }
         
      
-        realmHelper = RealmHelper()
+        
        
         
     }
@@ -43,54 +52,41 @@ class LyricsAdapter{
 
     func passLyrics () -> Dictionary<Int,[Lyrics]> {
         
-        result = [Int:[Lyrics]]()
-        
          realmHelper.getAllLyrics()
         lyrics = realmHelper.lyricsAdapted
         
-        other = [Lyrics]()
-        sad = [Lyrics]()
-        happy = [Lyrics]()
-        love = [Lyrics]()
+        var i = 0
         
-        for lyric in lyrics{
+        tags = [String]()
         
-            if(lyric.tag == Mood.Other ){
+        for tag in realmHelper.tags {
             
+            tags.append(tag)
+            result[i] = [Lyrics]()
+            i++
             
-                other.append(lyric)
-                
-            } else if (lyric.tag == Mood.Sad){
-            
-                sad.append(lyric)
-                
-            } else if (lyric.tag == Mood.Happy){
-            
-            
-                happy.append(lyric)
-                
-            } else if(lyric.tag == Mood.Love){
-            
-                love.append(lyric)
-            
-            }
-        
         }
         
-        result[0] = other
-        result[1] = sad
-        result[2] = happy
-        result[3] = love
+      
+        for lyric in lyrics {
+        
+        let sort = tags.indexOf(lyric.tag)
+            
+            result[sort!]?.append(lyric)
+        }
+        
+      
+        
         
         return result
     }
 
     
-    func addLyrics(description : String, tag : Mood){
+    func addLyrics(description : String, tag : String){
     
         let lyric = LyricsRealm()
         
-        lyric.tag = tag.rawValue
+        lyric.tag = tag
         lyric.songDescription = description
         
         realmHelper.writeToDataBase(lyric)
@@ -100,10 +96,14 @@ class LyricsAdapter{
     
     func removeLyrics(section : Int, position : Int){
         let lyric = result[section]![position]
-      
+        realmHelper.removeLyric(lyric.description, tag: lyric.tag)
         
-        realmHelper.removeLyric(lyric.description, tag: lyric.tag.rawValue)
-        
+    }
+    
+    func updateLyrics(description : String, tag : String){
+    
+        realmHelper.update(description, tag: tag)
+    
     }
 
 }

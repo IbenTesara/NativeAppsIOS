@@ -39,7 +39,8 @@ class MasterViewController: UITableViewController {
     required init(coder aDecoder: NSCoder){
         super.init(coder: aDecoder)!
         
-        sections = lyricAdapter.moods
+        
+        sections = lyricAdapter.tags
         lyrics = lyricAdapter.passLyrics()
         
     
@@ -131,16 +132,12 @@ class MasterViewController: UITableViewController {
             return "Results"
             
         }
-        
         return sections[section]
     }
    
     
    
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        print(indexPath)
-        print(indexPath.section)
-        print(indexPath.row)
         lyricAdapter.removeLyrics(indexPath.section, position: indexPath.row)
         refreshData()
         
@@ -155,13 +152,20 @@ class MasterViewController: UITableViewController {
         
         let controller = segue.sourceViewController as! AddViewController ;
         
-        lyricAdapter.addLyrics(controller.lyricsText, tag: controller.tag)
+        var tag = "Other"
+        
+        if(!controller.tag.isEmpty){
+        
+            tag = controller.tag
+        
+        }
+        
+        lyricAdapter.addLyrics(controller.lyrics, tag: tag)
         
        refreshData()
     
     }
-    
-
+ 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         
@@ -184,11 +188,6 @@ class MasterViewController: UITableViewController {
             
             controller.lyricsDescription = lyric.getDescription()
         
-        } else if (segue.identifier == "showAdd"){
-        
-        let controller = segue.destinationViewController as! AddViewController
-            controller.adapter = self.lyricAdapter
-        
         }
         
     }
@@ -204,15 +203,6 @@ class MasterViewController: UITableViewController {
         
         }
         
-        print(lyricsToFilter)
-        
-        for lyric in lyricsToFilter {
-        
-            print(lyric)
-            print(lyric.getDescription())
-        }
-        
-        
         self.filteredLyrics = lyricsToFilter.filter{ lyric in
             
             if(scope == "Ends"){
@@ -223,7 +213,7 @@ class MasterViewController: UITableViewController {
                 
             } else if (scope == "Tag"){
             
-                return lyric.tag.rawValue.lowercaseString == filter.lowercaseString
+                return lyric.tag.lowercaseString == filter.lowercaseString
             
             }
             
@@ -231,7 +221,6 @@ class MasterViewController: UITableViewController {
             
         }
         
-        print(filteredLyrics)
         
         tableView.reloadData()
         
@@ -242,6 +231,9 @@ class MasterViewController: UITableViewController {
         lyricAdapter.passLyrics()
         
         lyrics = lyricAdapter.result
+        sections = lyricAdapter.tags
+        
+        
         tableView.reloadData()
     
     }
