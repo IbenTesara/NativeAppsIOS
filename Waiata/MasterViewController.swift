@@ -209,7 +209,7 @@ class MasterViewController: UITableViewController {
             
                 let filterArray = lyric.getDescription().componentsSeparatedByString(" ")
                 
-                return filterArray.last?.lowercaseString == filter.lowercaseString
+                return (filterArray.last?.lowercaseString.containsString(filter.lowercaseString))!
                 
             } else if (scope == "Tag"){
             
